@@ -20,7 +20,6 @@ class BumbleAPI:
         # idea from https://www.joyk.com/dig/detail/1629959520338869
         # https://web.archive.org/web/20211107103928/https://www.joyk.com/dig/detail/1629959520338869
         # see also https://github.com/NDrong/bumble_request_signer
-        body = body.replace("True", "true").replace("False", "false").replace(" ", "").replace("\'", "\"")
         string = body + "whitetelevisionbulbelectionroofhorseflying"
         result = hashlib.md5(string.encode())
         return result.hexdigest()
