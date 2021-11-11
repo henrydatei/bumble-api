@@ -184,7 +184,7 @@ class BumbleAPI:
     def sendMessage(self, toID, message, messageID = 2147483647):
         url = "https://bumble.com/mwebapi.phtml?SERVER_SEND_CHAT_MESSAGE"
 
-        data = '{"$gpb":"badoo.bma.BadooMessage","body":[{"message_type":104,"chat_message":{"mssg":"' + message + '","message_type":1,"uid":"' + str(round(time.time() * 1000, 2)) + '","from_person_id":"' + self.myID + '","to_person_id":"' + toID +'","read":false}}],"message_id":' + str(messageID) + ',"message_type":104,"version":1,"is_background":false}'
+        data = '{"$gpb":"badoo.bma.BadooMessage","body":[{"message_type":104,"chat_message":{"mssg":"' + message.replace(" ", "_") + '","message_type":1,"uid":"' + str(int(time.time() * 1000)) + '","from_person_id":"' + self.myID + '","to_person_id":"' + toID +'","read":false}}],"message_id":' + str(messageID) + ',"message_type":104,"version":1,"is_background":false}'
 
         headers = CaseInsensitiveDict()
         headers["User-Agent"] = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:94.0) Gecko/20100101 Firefox/94.0"
@@ -205,5 +205,6 @@ class BumbleAPI:
         headers["Pragma"] = "no-cache"
         headers["Cache-Control"] = "no-cache"
 
+        print(data)
         resp = requests.post(url, headers=headers, data=data)
         return resp.json()
