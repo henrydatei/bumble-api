@@ -24,12 +24,6 @@ class BumbleAPI:
         result = hashlib.md5(string.encode())
         return result.hexdigest()
 
-    def __getValueOfProfileField(self, data, needle):
-        for field in data:
-            if field["id"] == needle:
-                return field["display_value"]
-        return None
-
     def getMyUserID(self):
         url = "https://bumble.com/mwebapi.phtml?SERVER_APP_STARTUP"
 
@@ -83,67 +77,7 @@ class BumbleAPI:
 
         resp = requests.post(url, headers=headers, data=data)
         json = resp.json()["body"][0]["user"]
-
-        try:
-            photo = Photo(json["profile_photo"]["id"], json["profile_photo"]["preview_url"], json["profile_photo"]["large_url"])
-        except:
-            photo = None
-        work = self.__getValueOfProfileField(json["profile_fields"], "work")
-        aboutMe = self.__getValueOfProfileField(json["profile_fields"], "aboutme_text")
-        height = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_height")
-        exercise = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_exercise")
-        zodiacSign = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_zodiak")
-        education = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_education")
-        drinking = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_drinking")
-        smoking = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_smoking")
-        datingIntensions = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_dating_intensions")
-        familyPlans = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_family_plans")
-        religion = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_religion")
-        politics = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_politics")
-        try:
-            hometown = Location(json["hometown"]["country"]["name"], json["hometown"]["region"]["name"], json["hometown"]["city"]["name"])
-        except:
-            hometown = None
-        try:
-            residence = Location(json["residence"]["country"]["name"], json["residence"]["region"]["name"], json["residence"]["city"]["name"])
-        except:
-            residence = None
-        try:
-            id = json["user_id"]
-        except:
-            id = None
-        try:
-            name = json["name"]
-        except:
-            name = None
-        try:
-            age = json["age"]
-        except:
-            age = None
-        try:
-            gender = json["gender"]
-        except:
-            gender = None
-        try:
-            verfication = json["verification_status"]
-        except:
-            verfication = None
-        try:
-            summary = json["profile_summary"]["primary_text"]
-        except:
-            summary = None
-        u = User(id, name, age, gender, verfication, photo, work, aboutMe, height, exercise, zodiacSign, education, drinking, smoking, datingIntensions, familyPlans, religion, politics, summary, hometown, residence)
-
-        for album in json["albums"]:
-            # test if album is blocked
-            try:
-                album["photos"]
-            except:
-                continue
-            for photo in album["photos"]:
-                p = Photo(photo["id"], photo["preview_url"], photo["large_url"])
-                u.addPhoto(p)
-        return u
+        return User().userFromJSON(json)
 
     def getChat(self, userID):
         url = "https://bumble.com/mwebapi.phtml?SERVER_OPEN_CHAT"
@@ -175,8 +109,7 @@ class BumbleAPI:
         c = Chat(json["chat_instance"]["date_modified"], json["chat_instance"]["is_new"], json["chat_instance"]["feels_like_chatting"], json["chat_instance"]["my_unread_messages"], json["chat_instance"]["their_unread_messages"], json["chat_instance"]["is_match"], self.getUser(userID))
 
         for message in json["chat_messages"]:
-            m = Message(message["uid"], message["date_modified"], message["from_person_id"], message["to_person_id"], message["mssg"], message["offensive"], message["date_created"], message["is_liked"], message["emojis_count"], message["has_emoji_characters_only"], message["is_edited"], message["is_reported"], message["is_likely_offensive"])
-            c.addMessage(m)
+            c.addMessage(Message().messageFromJSON(message))
 
         return c
 
