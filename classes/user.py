@@ -120,4 +120,22 @@ class User:
         self.photos.append(photo)
 
     def printUser(self):
-        print(self.name + " (" + self.age + ")")
+        print(self.name + " (" + str(self.age) + ")")
+
+    def toCSV(self, separator = ";"):
+        #csv = ""
+        #for att in [o for o in dir(self) if not o.startswith("_")]:
+        #    if not (isinstance(getattr(self, att), list) or hasattr(getattr(self, att), '__call__')):
+        #        if isinstance(getattr(self, att), Photo) or isinstance(getattr(self, att), Location):
+        #            csv = csv + separator + getattr(self, att).toCSV(separator = separator)
+        #        else:
+        #            csv = csv + separator + str(getattr(self,att)).replace("\n", " ").replace("None", "")
+        #return csv[1:]
+        csv = str(self.id) + separator + str(self.name) + separator + str(self.age) + separator + str(self.gender) + separator + str(self.verificationStatus) + separator + str(self.work) + separator + str(self.aboutMe).replace("\n", " ") + separator + str(self.height) + separator + str(self.exercise) + separator + str(self.zodiacSign) + separator + str(self.education) + separator + str(self.drinking) + separator + str(self.smoking) + separator + str(self.datingIntensions) + separator + str(self.familyPlans) + separator + str(self.religion) + separator + str(self.politics) + separator + str(self.profileSummary)
+        if not self.hometown is None:
+            csv = csv + separator + str(self.hometown.country) + separator + str(self.hometown.region) + separator + str(self.hometown.city)
+        if not self.residence is None:
+            csv = csv + separator + str(self.residence.country) + separator + str(self.residence.region) + separator + str(self.residence.city)
+        if not self.profilePhoto is None:
+            csv = csv + separator + str(self.profilePhoto.largeURl)
+        return csv

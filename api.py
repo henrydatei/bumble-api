@@ -137,6 +137,37 @@ class BumbleAPI:
         headers["Pragma"] = "no-cache"
         headers["Cache-Control"] = "no-cache"
 
-        print(data)
         resp = requests.post(url, headers=headers, data=data)
         return resp.json()
+
+    def getMatchQueue(self, numberUsers = 10): # max is 20 users in match queue
+        matchqueue = []
+
+        url = "https://bumble.com/mwebapi.phtml?SERVER_GET_ENCOUNTERS"
+
+        data = '{"$gpb":"badoo.bma.BadooMessage","body":[{"message_type":81,"server_get_encounters":{"number":' + str(numberUsers) + ',"context":1,"user_field_filter":{"projection":[210,370,200,230,490,540,530,560,291,732,890,930,662,570,380,493,1140,1150,1160,1161],"request_albums":[{"album_type":7},{"album_type":12,"external_provider":12,"count":8}],"game_mode":0,"request_music_services":{"top_artists_limit":8,"supported_services":[29],"preview_image_size":{"width":120,"height":120}}}}}],"message_id":7,"message_type":81,"version":1,"is_background":false}'
+
+        headers = CaseInsensitiveDict()
+        headers["Connection"] = "keep-alive"
+        headers["X-Pingback"] = self.__signRequest(data)
+        headers["X-Message-type"] = "81"
+        headers["sec-ch-ua-mobile"] = "?0"
+        headers["User-Agent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36"
+        headers["x-use-session-cookie"] = "1"
+        headers["Content-Type"] = "application/json"
+        headers["Accept"] = "*/*"
+        headers["Origin"] = "https://bumble.com"
+        headers["Sec-Fetch-Site"] = "same-origin"
+        headers["Sec-Fetch-Mode"] = "cors"
+        headers["Sec-Fetch-Dest"] = "empty"
+        headers["Referer"] = "https://bumble.com/app"
+        headers["Accept-Language"] = "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7"
+        headers["Cookie"] = "session=" + self.session + "; session_cookie_name=session"
+
+        resp = requests.post(url, headers=headers, data=data)
+
+        for user in resp.json()["body"][0]["client_encounters"]["results"]:
+            u = User().userFromJSON(user["user"])
+            matchqueue.append(u)
+
+        return matchqueue
