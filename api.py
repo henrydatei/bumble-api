@@ -171,3 +171,34 @@ class BumbleAPI:
             matchqueue.append(u)
 
         return matchqueue
+
+    def voteUser(self, userID, vote):
+        url = "https://bumble.com/mwebapi.phtml?SERVER_ENCOUNTERS_VOTE"
+
+        data = '{"$gpb":"badoo.bma.BadooMessage","body":[{"message_type":80,"server_encounters_vote":{"person_id":"' + userID + '","vote":' + str(vote) + ',"vote_source":1,"game_mode":0}}],"message_id":13,"message_type":80,"version":1,"is_background":false}'
+
+        headers = CaseInsensitiveDict()
+        headers["Connection"] = "keep-alive"
+        headers["X-Pingback"] = self.__signRequest(data)
+        headers["X-Message-type"] = "80"
+        headers["sec-ch-ua-mobile"] = "?0"
+        headers["User-Agent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36"
+        headers["x-use-session-cookie"] = "1"
+        headers["Content-Type"] = "application/json"
+        headers["Accept"] = "*/*"
+        headers["Origin"] = "https://bumble.com"
+        headers["Sec-Fetch-Site"] = "same-origin"
+        headers["Sec-Fetch-Mode"] = "cors"
+        headers["Sec-Fetch-Dest"] = "empty"
+        headers["Referer"] = "https://bumble.com/app"
+        headers["Accept-Language"] = "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7"
+        headers["Cookie"] = "session=" + self.session + "; session_cookie_name=session"
+
+        resp = requests.post(url, headers=headers, data=data)
+        return resp
+
+    def dislikeUser(self, userID):
+        self.voteUser(userID, 3)
+
+    def likeUser(self, userID):
+        self.voteUser(userID, 2)

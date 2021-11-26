@@ -131,11 +131,20 @@ class User:
         #        else:
         #            csv = csv + separator + str(getattr(self,att)).replace("\n", " ").replace("None", "")
         #return csv[1:]
-        csv = str(self.id) + separator + str(self.name) + separator + str(self.age) + separator + str(self.gender) + separator + str(self.verificationStatus) + separator + str(self.work) + separator + str(self.aboutMe).replace("\n", " ") + separator + str(self.height) + separator + str(self.exercise) + separator + str(self.zodiacSign) + separator + str(self.education) + separator + str(self.drinking) + separator + str(self.smoking) + separator + str(self.datingIntensions) + separator + str(self.familyPlans) + separator + str(self.religion) + separator + str(self.politics) + separator + str(self.profileSummary)
+        csv = str(self.id) + separator + str(self.name) + separator + str(self.age) + separator + str(self.gender) + separator + str(self.verificationStatus) + separator + str(self.work) + separator + str(self.aboutMe).replace("\n", " ").replace(";", ",") + separator + str(self.height).split(" ")[0] + separator + str(self.exercise) + separator + str(self.zodiacSign) + separator + str(self.education) + separator + str(self.drinking) + separator + str(self.smoking) + separator + str(self.datingIntensions) + separator + str(self.familyPlans) + separator + str(self.religion) + separator + str(self.politics) + separator + str(self.profileSummary)
         if not self.hometown is None:
             csv = csv + separator + str(self.hometown.country) + separator + str(self.hometown.region) + separator + str(self.hometown.city)
+        else:
+            csv = csv + separator + separator + separator
         if not self.residence is None:
             csv = csv + separator + str(self.residence.country) + separator + str(self.residence.region) + separator + str(self.residence.city)
+        else:
+            csv = csv + separator + separator + separator
         if not self.profilePhoto is None:
-            csv = csv + separator + str(self.profilePhoto.largeURl)
-        return csv
+            csv = csv + separator + str(self.profilePhoto.largeURL)
+        else:
+            csv = csv + separator
+        return csv.replace("None", "")
+
+    def CSVHeader(self):
+        return "id;name;age;gender;verificationStatus;work;aboutMe;height;exercise;zodiacSign;education;drinking;smoking;datingIntensions;familyPlans;religion;politics;profileSummary;hometown.country;hometown.region;hometown.city;residence.country;residence.region;residence.city;profilePhoto.largeURL"
