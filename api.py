@@ -104,19 +104,22 @@ class BumbleAPI:
         headers["Cache-Control"] = "no-cache"
 
         resp = requests.post(url, headers=headers, data=data)
-        json = resp.json()["body"][0]["client_open_chat"]
+        try:
+            json = resp.json()["body"][0]["client_open_chat"]
 
-        c = Chat(json["chat_instance"]["date_modified"], json["chat_instance"]["is_new"], json["chat_instance"]["feels_like_chatting"], json["chat_instance"]["my_unread_messages"], json["chat_instance"]["their_unread_messages"], json["chat_instance"]["is_match"], self.getUser(userID))
+            c = Chat(json["chat_instance"]["date_modified"], json["chat_instance"]["is_new"], json["chat_instance"]["feels_like_chatting"], json["chat_instance"]["my_unread_messages"], json["chat_instance"]["their_unread_messages"], json["chat_instance"]["is_match"], self.getUser(userID))
 
-        for message in json["chat_messages"]:
-            c.addMessage(Message().messageFromJSON(message))
-
+            for message in json["chat_messages"]:
+                c.addMessage(Message().messageFromJSON(message))
+        except:
+            c = None
+        
         return c
 
     def sendMessage(self, toID, message, messageID = 2147483647):
         url = "https://bumble.com/mwebapi.phtml?SERVER_SEND_CHAT_MESSAGE"
 
-        data = '{"$gpb":"badoo.bma.BadooMessage","body":[{"message_type":104,"chat_message":{"mssg":"' + message.replace(" ", "_") + '","message_type":1,"uid":"' + str(int(time.time() * 1000)) + '","from_person_id":"' + self.myID + '","to_person_id":"' + toID +'","read":false}}],"message_id":' + str(messageID) + ',"message_type":104,"version":1,"is_background":false}'
+        data = '{"$gpb":"badoo.bma.BadooMessage","body":[{"message_type":104,"chat_message":{"mssg":"' + str(message) + '","message_type":1,"uid":"' + str(int(time.time() * 1000)) + '","from_person_id":"' + self.myID + '","to_person_id":"' + toID +'","read":false}}],"message_id":' + str(messageID) + ',"message_type":104,"version":1,"is_background":false}'
 
         headers = CaseInsensitiveDict()
         headers["User-Agent"] = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:94.0) Gecko/20100101 Firefox/94.0"
@@ -171,6 +174,45 @@ class BumbleAPI:
             matchqueue.append(u)
 
         return matchqueue
+
+    def getConversationQueue(self, offset = 0, preferred_count = 10, section = 2):
+        conversations = []
+
+        url = "https://bumble.com/mwebapi.phtml?SERVER_GET_USER_LIST"
+
+        data = '{"$gpb":"badoo.bma.BadooMessage","body":[{"message_type":245,"server_get_user_list":{"user_field_filter":{"projection":[200,210,340,230,640,580,300,860,280,590,591,250,700,762,592,880,582,930,585,583,305,330,763,1423,584,1262,911,912]},"preferred_count":' + str(preferred_count) + ',"folder_id":0,"filter":[3],"offset":' + str(offset) + ',"section_requests":[{"section_id":"' + str(section) + '"}]}}],"message_id":13,"message_type":245,"version":1,"is_background":false}'
+
+        headers = CaseInsensitiveDict()
+        headers["Connection"] = "keep-alive"
+        headers["X-Pingback"] = self.__signRequest(data)
+        headers["X-Message-type"] = "81"
+        headers["sec-ch-ua-mobile"] = "?0"
+        headers["User-Agent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36"
+        headers["x-use-session-cookie"] = "1"
+        headers["Content-Type"] = "application/json"
+        headers["Accept"] = "*/*"
+        headers["Origin"] = "https://bumble.com"
+        headers["Sec-Fetch-Site"] = "same-origin"
+        headers["Sec-Fetch-Mode"] = "cors"
+        headers["Sec-Fetch-Dest"] = "empty"
+        headers["Referer"] = "https://bumble.com/app"
+        headers["Accept-Language"] = "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7"
+        headers["Cookie"] = "session=" + self.session + "; session_cookie_name=session"
+
+        resp = requests.post(url, headers=headers, data=data)
+
+        try:
+            # if end of the conversation queue is reached, this will break
+            for user in resp.json()["body"][0]["client_user_list"]["section"][-1]["users"]:
+                u = User().userFromJSON(user)
+                conversations.append(u)
+            # search for more conversations
+            moreConversations = self.getConversationQueue(offset = offset + preferred_count, preferred_count = preferred_count)
+            conversations = conversations + moreConversations
+        except:
+            #print("End reached")
+            pass
+        return conversations
 
     def voteUser(self, userID, vote):
         url = "https://bumble.com/mwebapi.phtml?SERVER_ENCOUNTERS_VOTE"
