@@ -1,3 +1,4 @@
+from requests.sessions import extract_cookies_to_jar
 from .photo import Photo
 from .location import Location
 
@@ -59,18 +60,54 @@ class User:
             photo = Photo(json["profile_photo"]["id"], json["profile_photo"]["preview_url"], json["profile_photo"]["large_url"])
         except:
             photo = None
-        work = self.__getValueOfProfileField(json["profile_fields"], "work")
-        aboutMe = self.__getValueOfProfileField(json["profile_fields"], "aboutme_text")
-        height = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_height")
-        exercise = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_exercise")
-        zodiacSign = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_zodiak")
-        education = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_education")
-        drinking = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_drinking")
-        smoking = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_smoking")
-        datingIntensions = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_dating_intensions")
-        familyPlans = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_family_plans")
-        religion = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_religion")
-        politics = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_politics")
+        try:
+            work = self.__getValueOfProfileField(json["profile_fields"], "work")
+        except:
+            work = None
+        try:
+            aboutMe = self.__getValueOfProfileField(json["profile_fields"], "aboutme_text")
+        except:
+            aboutMe = None
+        try:
+            height = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_height")
+        except:
+            height = None
+        try:
+            exercise = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_exercise")
+        except:
+            exercise = None
+        try:
+            zodiacSign = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_zodiak")
+        except:
+            zodiacSign = None
+        try:
+            education = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_education")
+        except:
+            education = None
+        try:
+            drinking = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_drinking")
+        except:
+            drinking = None
+        try:
+            smoking = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_smoking")
+        except:
+            smoking = None
+        try:
+            datingIntensions = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_dating_intensions")
+        except:
+            datingIntensions = None
+        try:
+            familyPlans = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_family_plans")
+        except:
+            familyPlans = None
+        try:
+            religion = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_religion")
+        except:
+            religion = None
+        try:
+            politics = self.__getValueOfProfileField(json["profile_fields"], "lifestyle_politics")
+        except:
+            politics = None
         try:
             hometown = Location(json["hometown"]["country"]["name"], json["hometown"]["region"]["name"], json["hometown"]["city"]["name"])
         except:
@@ -105,16 +142,20 @@ class User:
             summary = None
         u = User(id, name, age, gender, verfication, photo, work, aboutMe, height, exercise, zodiacSign, education, drinking, smoking, datingIntensions, familyPlans, religion, politics, summary, hometown, residence)
 
-        for album in json["albums"]:
+        try:
+            for album in json["albums"]:
             # test if album is blocked
-            try:
-                album["photos"]
-            except:
-                continue
-            for photo in album["photos"]:
-                p = Photo(photo["id"], photo["preview_url"], photo["large_url"])
-                u.addPhoto(p)
+                try:
+                    album["photos"]
+                except:
+                    continue
+                for photo in album["photos"]:
+                    p = Photo(photo["id"], photo["preview_url"], photo["large_url"])
+                    u.addPhoto(p)
+        except:
+            pass
         return u
+
 
     def addPhoto(self, photo):
         self.photos.append(photo)

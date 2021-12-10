@@ -37,5 +37,5 @@ class Message:
         self.isLikelyOffensive = isLikelyOffensive
 
     def messageFromJSON(self, message):
-        m = Message(message["uid"], message["date_modified"], message["from_person_id"], message["to_person_id"], message["mssg"], message["offensive"], message["date_created"], message["is_liked"], message["emojis_count"], message["has_emoji_characters_only"], message["is_edited"], message["is_reported"], message["is_likely_offensive"])
+        m = Message(message["uid"], message["date_modified"], message["from_person_id"], message["to_person_id"], message["mssg"].replace('<br />', ", "), message["offensive"], message["date_created"], message["is_liked"], message["emojis_count"], message["has_emoji_characters_only"], message["is_edited"], message["is_reported"], message["is_likely_offensive"])
         return m
