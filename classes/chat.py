@@ -1,31 +1,29 @@
-from datetime import datetime
+import dataclasses
+from typing import List
 
+from .chatInstance import ChatInstance
+from .chatSettings import ChatSettings
+from .message import Message
+from .user import User
+
+@dataclasses.dataclass
 class Chat:
-    dateModified = None
-    isNew = None
-    feelsLikeChatting = None
-    myUnreadMessages = None
-    theirUnreadMessages = None
-    isMatch = None
-    messages = []
-    user = None
-
-    def __init__(self, dateModified, isNew, feelsLikeChatting, myUnreadMessages, theirUnreadMessages, isMatch, user):
-        self.dateModified = datetime.fromtimestamp(dateModified)
-        self.isNew = isNew
-        self.feelsLikeChatting = feelsLikeChatting
-        self.myUnreadMessages = myUnreadMessages
-        self.theirUnreadMessages = theirUnreadMessages
-        self.isMatch = isMatch
-        self.user = user
-
-    def addMessage(self, message):
-        self.messages.append(message)
+    chat_instance: ChatInstance
+    is_chat_available: bool
+    user_originated_message: bool
+    title: str
+    chat_settings: ChatSettings
+    chat_messages: List[Message]
+    chat_user: User
+    encrypted_im_writing: str
+    encrypted_comet_url: str
+    read_messages_timestamp: int
+    is_not_interested: bool
 
     def printChat(self):
-        print("=== Chat with " + self.user.name + " ===")
-        for message in self.messages:
-            if self.user.id == message.fromID:
-                print(self.user.name + ": " + message.text)
+        print("=== Chat with " + self.chat_user.name + " ===")
+        for message in self.chat_messages:
+            if self.chat_user.user_id == message.from_person_id:
+                print(self.chat_user.name + ": " + message.mssg)
             else:
-                print("Me: " + message.text)
+                print("Me: " + message.mssg)

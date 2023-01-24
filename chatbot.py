@@ -57,7 +57,7 @@ def getResponse(text, chat_history_ids = []):
 from api import BumbleAPI
 import time
 import random
-session = ""
+session = "s1:557:YxF0eVQ6lzOEQY1cz16MQ4p38h31yA2eZS5hqzaY"
 
 api = BumbleAPI(session)
 

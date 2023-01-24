@@ -1,41 +1,58 @@
-from datetime import datetime
+import dataclasses
 
+from .chatUserInfo import ChatUserInfo
+from .sticker import Sticker
+from .purchasedGift import PurchasedGift
+from .verificationAccessObject import VerificationAccessObject
+from .videoCallMsgInfo import VideoCallMsgInfo
+from .story import Story
+from .experimentalGift import ExperimentalGift
+
+@dataclasses.dataclass
 class Message:
-    id = None
-    dateModified = None
-    fromID = None
-    toID = None
-    text = None
-    offensive = None
-    dateCreated = None
-    isLiked = None
-    emojisCount = None
-    hasEmojiCharactersOnly = None
-    isEdited = None
-    isReported = None
-    isLikelyOffensive = None
-
-    def __init__(self, id = None, dateModified = None, fromID = None, toID = None, text = None, offensive = None, dateCreated = None, isLiked = None, emojisCount = None, hasEmojiCharactersOnly = None, isEdited = None, isReported = None, isLikelyOffensive = None) -> None:
-        self.id = id
-        if dateModified == None:
-            self.dateModified = None
-        else:
-            self.dateModified = datetime.fromtimestamp(dateModified)
-        self.fromID = fromID
-        self.toID = toID
-        self.text = text
-        self.offensive = offensive
-        if dateCreated == None:
-            self.dateCreated = None
-        else:
-            self.dateCreated = datetime.fromtimestamp(dateCreated)
-        self.isLiked = isLiked
-        self.emojisCount = emojisCount
-        self.hasEmojiCharactersOnly = hasEmojiCharactersOnly
-        self.isEdited = isEdited
-        self.isReported = isReported
-        self.isLikelyOffensive = isLikelyOffensive
-
-    def messageFromJSON(self, message):
-        m = Message(message["uid"], message["date_modified"], message["from_person_id"], message["to_person_id"], message["mssg"].replace('<br />', ", "), message["offensive"], message["date_created"], message["is_liked"], message["emojis_count"], message["has_emoji_characters_only"], message["is_edited"], message["is_reported"], message["is_likely_offensive"])
-        return m
+    uid: str
+    date_modified: int
+    from_person_id: str
+    to_person_id: str
+    mssg: str
+    message_type: int
+    read: bool
+    album_id: str
+    total_unread: int
+    unread_from_user: int
+    image_url: str
+    frame_url: str
+    can_delete: bool
+    deleted: bool
+    section_title: str = dataclasses.field(init = False, default = None)
+    from_person_info: ChatUserInfo
+    sticker: Sticker
+    gift: PurchasedGift
+    offensive: bool
+    display_message: str
+    verification_method: VerificationAccessObject
+    date_created: int
+    access_response_type: int
+    is_liked: bool
+    reply_to_uid: str
+    first_response: bool
+    video_call_msg_info: VideoCallMsgInfo
+    is_masked: bool
+    allow_report: bool
+    emojis_count: int
+    has_emoji_characters_only: bool
+    user_substitute_id: str
+    allow_reply: bool
+    allow_edit_until_timestamp: int
+    is_edited: bool
+    allow_forwarding: bool
+    clear_chat_version: int
+    story: Story
+    is_declined: bool
+    has_lewd_photo: bool
+    is_reported: bool
+    allow_like: bool
+    is_legacy: bool
+    is_likely_offensive: bool
+    game_id: str
+    experimental_gift: ExperimentalGift
